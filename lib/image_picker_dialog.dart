@@ -3,15 +3,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:image_picker_ui/image_picker_handler.dart';
 
+import 'package:flutter/cupertino.dart';
+
+
 class ImagePickerDialog extends StatelessWidget {
 
   ImagePickerHandler _listener;
   AnimationController _controller;
   BuildContext context;
-   int bgColor;
-   int labelColor;
+  int bgColor;
+  int labelColor;
+  String lang;
 
-  ImagePickerDialog(this._listener, this._controller,this.bgColor,this.labelColor);
+  ImagePickerDialog(this._listener, this._controller,this.bgColor,this.labelColor,this.lang);
 
   Animation<double> _drawerContentsOpacity;
   Animation<Offset> _drawerDetailsPosition;
@@ -55,7 +59,9 @@ class ImagePickerDialog extends StatelessWidget {
 
   startTime() async {
     var _duration = new Duration(milliseconds: 200);
-    return new Timer(_duration, navigationPage);
+    return new Timer(_duration, (){
+      navigationPage();
+    });
   }
 
   void navigationPage() {
@@ -80,34 +86,29 @@ class ImagePickerDialog extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                new GestureDetector(
-                  onTap: () => _listener.openCamera(),
-                  child: roundedButton(
-                      "Camera",
-                      EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                      new Color(bgColor),
-                      new Color(labelColor)),
-                ),
-                new GestureDetector(
-                  onTap: () => _listener.openGallery(),
-                  child: roundedButton(
-                      "Gallery",
-                      EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                      new Color(bgColor),
-                      new Color(labelColor)),
-                ),
-                const SizedBox(height: 15.0),
-                new GestureDetector(
-                  onTap: () => dismissDialog(),
-                  child: new Padding(
-                    padding: EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
-                    child: roundedButton(
-                        "Cancel",
-                        EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                        new Color(bgColor),
-                        new Color(labelColor)),
-                  ),
-                ),
+                CupertinoActionSheet(
+                  actions: <Widget>[
+                    CupertinoActionSheetAction(
+                        child:  Text(lang == 'zh'? '相片集':'Gallery'),
+                        onPressed: () {
+                          _listener.openGallery();
+                        },
+                      ),
+                    CupertinoActionSheetAction(
+                      child:  Text(lang == 'zh'? '相機':'Camera'),
+                      onPressed: () {
+                        _listener.openCamera();
+                      },
+                    ),
+                  ],
+                   cancelButton: CupertinoActionSheetAction(
+                            child: Text(lang == 'zh'? '取消':'Cancel'),
+                            isDefaultAction: true,
+                            onPressed: () {
+                              Navigator.pop(context, 'Cancel');
+                            },
+                          ),
+                )
               ],
             ),
           ),

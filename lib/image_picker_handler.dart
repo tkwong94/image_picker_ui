@@ -10,34 +10,27 @@ class ImagePickerHandler {
   ImagePickerDialog imagePicker;
   AnimationController _controller;
   ImagePickerListener _listener;
-bool _isCropRequired;
+  bool _isCropRequired;
+  String _lang;
 
   ImagePickerHandler(this._listener, this._controller);
 
   openCamera() async {
     imagePicker.dismissDialog();
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    if(_isCropRequired){
-      cropImage(image);
-    }else{
-      _listener.userImage(image);
-    }
+    _isCropRequired? cropImage(image):_listener.userImage(image);
   }
 
   openGallery() async {
     imagePicker.dismissDialog();
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if(_isCropRequired){
-      cropImage(image);
-    }else{
-      _listener.userImage(image);
-    }
-
+    _isCropRequired? cropImage(image):_listener.userImage(image);
   }
 
-  void build(int bgColor,int labelColor,bool isCropRequired) {
+  void build(int bgColor,int labelColor,bool isCropRequired,String lang) {
     _isCropRequired=isCropRequired;
-    imagePicker = new ImagePickerDialog(this, _controller,bgColor,labelColor);
+    _lang = lang;
+    imagePicker = new ImagePickerDialog(this, _controller,bgColor,labelColor,lang);
     imagePicker.initState();
   }
 
@@ -49,7 +42,9 @@ bool _isCropRequired;
       maxWidth: 512,
       maxHeight: 512,
     );
+
     _listener.userImage(croppedFile);
+
   }
 
   showDialog(BuildContext context) {
